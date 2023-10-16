@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:4200"
+    container_name: frontend
+    working_dir: /usr/src/app
+    volumes:
+      - .:/app
+      - type: bind
+        source: ./frontend
+        target: /usr/src/app
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    container_name: backend
+    working_dir: /usr/src/app
+    links:
+      - database
+    depends_on:
+      - database
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /usr/src/app
+      - /usr/src/app/node_modules
+
+  # Create database container
+  database:
+    image: postgres:13-alpine3.18
+    container_name: database
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres-db:${POSTGRES_DATA_DIR}
+
+# Volumes
+volumes:
+  postgres-db:

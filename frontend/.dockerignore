@@ -1,5 +1,5 @@
 # Exclude node_modules for both Angular and Nest.js
-**/node_modules
+#**/node_modules
 
 # Exclude development and build artifacts
 *.log

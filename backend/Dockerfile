@@ -1,20 +1,33 @@
-# Base image
-FROM node:18-alpine
+FROM node:18-alpine AS development
 
 # system package deps
 RUN apk update && apk upgrade
 RUN apk add --no-cache libc6-compat
 
-# Set working directory so that all
-# subsequent command runs in this folder
 WORKDIR /usr/src/app
 
-# Copy package json and install dependencies
 COPY package*.json ./
+COPY tsconfig.build.json ./
+COPY tsconfig.json ./
+
 RUN npm install
+RUN npm run build
 
-# Expose port to access server
-EXPOSE 8080
+EXPOSE 3000
 
-# Command to  run our app
-CMD ["npm", "run", "start:dev"]
+FROM node:18-alpine AS production
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+# system package deps
+RUN apk update && apk upgrade
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /usr/src/app
+
+COPY --from=development /usr/src/app/ .
+
+EXPOSE 3000
+
+CMD ["node", "dist/main"]

@@ -4,7 +4,7 @@ FROM node:18-alpine AS development
 RUN apk update && apk upgrade
 RUN apk add --no-cache libc6-compat
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/backend
 
 COPY package*.json ./
 COPY tsconfig.build.json ./
@@ -26,7 +26,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /usr/src/app
 
-COPY --from=development /usr/src/app/ .
+COPY --from=development /usr/src/app/backend .
 
 EXPOSE 3000
 

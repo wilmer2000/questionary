@@ -24,7 +24,7 @@ ENV NODE_ENV=${NODE_ENV}
 RUN apk update && apk upgrade
 RUN apk add --no-cache libc6-compat
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/backend
 
 COPY --from=development /usr/src/app/backend .
 

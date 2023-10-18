@@ -1,6 +1,6 @@
 FROM node:18-alpine AS development
 
-WORKDIR /app/usr/src/frontend
+WORKDIR /usr/src/app/frontend
 
 # system package deps
 RUN apk update && apk upgrade
@@ -13,6 +13,11 @@ RUN npm install -g @angular/cli
 
 COPY . .
 
-CMD ["ng", "serve", "--watch"]
-
 EXPOSE 4200
+
+#CMD ng serve
+
+#CMD ["npm", "run", "watch"]
+
+CMD ["ng", "serve", "--host 0.0.0.0", "--port 4200"]
+

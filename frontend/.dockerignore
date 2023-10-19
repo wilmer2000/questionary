@@ -1,0 +1,14 @@
+# Exclude node_modules for both Angular and Nest.js
+#**/node_modules
+
+# Exclude development and build artifacts
+*.log
+*.md
+*.sh
+*.ts
+*.map
+
+# Exclude Angular specific files
+angular.json
+e2e/
+src/environments/

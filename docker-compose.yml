@@ -1,0 +1,100 @@
+#version: '3.8'
+#services:
+#  frontend:
+#    container_name: frontend
+#    build: ./frontend
+#    ports:
+#      - "4200:4200"
+#    working_dir: /usr/src/app
+#    volumes:
+#      - type: bind
+#        source: ./frontend
+#        target: /usr/src/app
+#      - /app/usr/src/node_modules
+#
+#  backend:
+#    build: ./backend
+#    ports:
+#      - "8080:8080"
+#    container_name: backend
+#    working_dir: /usr/src/app
+#    links:
+#      - database
+#    depends_on:
+#      - database
+#    volumes:
+#      - type: bind
+#        source: ./backend
+#        target: /usr/src/app
+#      - /usr/src/app/node_modules
+#
+#  database:
+#    image: postgres:13-alpine3.18
+#    container_name: database
+#    restart: always
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      - POSTGRES_USER=${POSTGRES_USER}
+#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#      - POSTGRES_DB=${POSTGRES_DB}
+#    volumes:
+#      - postgres-db:${POSTGRES_DATA_DIR}
+#
+#volumes:
+#  postgres-db:
+
+version: "3.8"
+
+services:
+  # Our NestJS Api
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+      # Only build development stage from Dockerfile
+      target: development
+    # Mount our host dir to the docker container
+    volumes:
+      - ./backend:/usr/src/app/backend
+      - /usr/src/app/backend/node_modules/
+    # RUN in debug mode: npm run start:debug --> Also start your vscode debugger
+    # Run in dev mode: npm run start:dev
+    command: npm run start:dev
+    depends_on:
+      - database
+    environment:
+      DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/db"
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+
+  # Our Angular Frontend
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+      target: development
+#    command: npm run start
+    volumes:
+      - ./frontend:/usr/src/app/frontend
+      - /usr/src/app/frontend/node_modules
+    ports:
+      - "4200:4200"
+    links:
+      - backend
+
+  # Our Postgres Database for NestJS to connect to
+  database:
+    image: postgres:13-alpine3.18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-db:${POSTGRES_DATA_DIR}
+
+volumes:
+  postgres-db:

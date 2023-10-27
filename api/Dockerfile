@@ -1,10 +1,9 @@
-FROM node:18-alpine AS development
+FROM node:20-alpine AS development
 
-# system package deps
 RUN apk update && apk upgrade
 RUN apk add --no-cache libc6-compat
 
-WORKDIR /usr/src/app/backend
+WORKDIR /usr/src/app/api
 
 COPY package*.json ./
 COPY tsconfig.build.json ./
@@ -13,9 +12,11 @@ COPY tsconfig.json ./
 RUN npm install
 RUN npm run build
 
+COPY . .
+
 EXPOSE 3000
 
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -24,9 +25,9 @@ ENV NODE_ENV=${NODE_ENV}
 RUN apk update && apk upgrade
 RUN apk add --no-cache libc6-compat
 
-WORKDIR /usr/src/app/backend
+WORKDIR /usr/src/app/api
 
-COPY --from=development /usr/src/app/backend .
+COPY --from=development /usr/src/app/api .
 
 EXPOSE 3000
 

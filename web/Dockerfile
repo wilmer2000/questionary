@@ -1,8 +1,7 @@
-FROM node:18-alpine AS development
+FROM node:20-alpine AS development
 
-WORKDIR /usr/src/app/frontend
+WORKDIR /usr/src/app/web
 
-# system package deps
 RUN apk update && apk upgrade
 RUN apk add --no-cache libc6-compat
 
@@ -12,9 +11,5 @@ RUN npm install
 
 COPY . .
 
-#CMD ng serve
-
 CMD ["npm", "run", "dev"]
-
-#CMD ["ng", "serve", "--host 0.0.0.0", "--port 4200"]
 

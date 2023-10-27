@@ -1,19 +1,15 @@
 version: "3.8"
 services:
-  # Our NestJS Api
-  backend:
+  # NestJS Api
+  api:
     build:
       dockerfile: Dockerfile
-      context: ./backend
-      # Only build development stage from Dockerfile
+      context: ./api
       target: development
-    # Mount our host dir to the docker container
     volumes:
-      - ./backend:/usr/src/app/backend
-      - /usr/src/app/backend/node_modules/
-    # RUN in debug mode: npm run start:debug --> Also start your vscode debugger
-    # Run in dev mode: npm run start:dev
-    command: npm run start:dev
+      - ./api:/usr/src/app/api
+      - /usr/src/app/api/node_modules
+#    command: npm run start:dev
     depends_on:
       - database
     environment:
@@ -22,7 +18,7 @@ services:
     ports:
       - "3000:3000"
 
-  # Our React Frontend
+  # React
   web:
     build:
       dockerfile: Dockerfile
@@ -34,10 +30,10 @@ services:
     ports:
       - "8000:8000"
     links:
-      - backend
+      - api
     tty: true
 
-  # Our Postgres Database for NestJS to connect to
+  # Postgres Database for NestJS to connect to
   database:
     image: postgres:13-alpine3.18
     environment:

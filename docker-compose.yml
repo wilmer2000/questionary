@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   # Our NestJS Api
   backend:
@@ -23,20 +22,20 @@ services:
     ports:
       - "3000:3000"
 
-  # Our Angular Frontend
-  frontend:
+  # Our React Frontend
+  web:
     build:
       dockerfile: Dockerfile
-      context: ./frontend
+      context: ./web
       target: development
-#    command: npm run start
     volumes:
-      - ./frontend:/usr/src/app/frontend
-      - /usr/src/app/frontend/node_modules
+      - ./web:/usr/src/app/web
+      - /usr/src/app/web/node_modules
     ports:
-      - "4200:4200"
+      - "8000:8000"
     links:
       - backend
+    tty: true
 
   # Our Postgres Database for NestJS to connect to
   database:
